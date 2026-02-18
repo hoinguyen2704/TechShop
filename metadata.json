@@ -1,0 +1,5 @@
+{
+  "name": "SpringShop E-commerce",
+  "description": "A comprehensive React frontend for a Spring Boot E-commerce backend, featuring user shopping flows and an admin dashboard.",
+  "requestFramePermissions": []
+}
