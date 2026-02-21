@@ -8,17 +8,22 @@ import Home from './pages/Home';
 import ProductList from './pages/ProductList';
 import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
-import Login from './pages/Login';
+import AuthPage from './pages/AuthPage';
 import Checkout from './pages/Checkout';
+import Promotions from './pages/Promotions';
+import Profile from './pages/Profile';
+import OrderHistory from './pages/OrderHistory';
 import Dashboard from './pages/admin/Dashboard';
 import AdminLayout from './components/Layout/AdminLayout';
+import ChatBot from './components/ChatBot';
 
-// Layout wrapper for Public/User pages
+// Layout wrapper for Public/User pages with ChatBot included
 const MainLayout = () => (
   <div className="flex flex-col min-h-screen">
     <Header />
-    <main className="flex-1 bg-gray-50">
+    <main className="flex-1 bg-gray-50 relative">
       <Outlet />
+      <ChatBot />
     </main>
     <Footer />
   </div>
@@ -29,7 +34,7 @@ const ProtectedRoute = ({ role }: { role?: string }) => {
   const { isAuthenticated, isAdmin, isLoading } = useAuth();
   
   if (isLoading) return <div>Loading...</div>;
-  if (!isAuthenticated) return <Navigate to="/login" />;
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
   if (role === 'ADMIN' && !isAdmin) return <Navigate to="/" />;
 
   return <Outlet />;
@@ -42,21 +47,22 @@ const App = () => {
         <Router>
           <Routes>
             {/* Auth Routes */}
-            <Route path="/login" element={<Login />} />
+            <Route path="/login" element={<React.Fragment><Header /><AuthPage /><Footer /></React.Fragment>} />
+            <Route path="/register" element={<React.Fragment><Header /><AuthPage /><Footer /></React.Fragment>} />
             
             {/* Public Routes */}
             <Route element={<MainLayout />}>
               <Route path="/" element={<Home />} />
               <Route path="/products" element={<ProductList />} />
               <Route path="/products/:id" element={<ProductDetail />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/register" element={<div className="p-8 text-center">Register Page Placeholder</div>} />
               
-              {/* User Protected */}
+              {/* User Protected Routes */}
               <Route element={<ProtectedRoute />}>
+                <Route path="/promotions" element={<Promotions />} />
+                <Route path="/cart" element={<Cart />} />
                 <Route path="/checkout" element={<Checkout />} />
-                <Route path="/profile" element={<div className="p-8 text-center">Profile Page Placeholder</div>} />
-                <Route path="/order-history" element={<div className="p-8 text-center">Order History Placeholder</div>} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/order-history" element={<OrderHistory />} />
               </Route>
             </Route>
 

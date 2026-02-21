@@ -25,6 +25,24 @@ const Login = () => {
     }
   };
 
+  const handleDemoLogin = (role: 'USER' | 'ADMIN') => {
+    // Simulate a login response
+    const mockId = role === 'ADMIN' ? 'mock-admin-id' : 'mock-user-id';
+    const mockResponse = {
+      token: 'mock-jwt-token-' + role,
+      id: mockId,
+      fullName: role === 'ADMIN' ? 'System Admin' : 'Demo Customer',
+      role: role
+    };
+    
+    login(mockResponse);
+    if (role === 'ADMIN') {
+      navigate('/admin/dashboard');
+    } else {
+      navigate('/');
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
@@ -58,7 +76,29 @@ const Login = () => {
             Login
           </button>
         </form>
-        <p className="mt-4 text-center text-sm text-gray-600">
+        
+        <div className="my-6 flex items-center">
+          <div className="flex-1 border-t border-gray-300"></div>
+          <span className="px-3 text-sm text-gray-500">Or try demo account</span>
+          <div className="flex-1 border-t border-gray-300"></div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <button 
+            onClick={() => handleDemoLogin('USER')}
+            className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 rounded transition text-sm"
+          >
+            Demo User
+          </button>
+          <button 
+            onClick={() => handleDemoLogin('ADMIN')}
+            className="w-full bg-gray-800 hover:bg-gray-900 text-white font-medium py-2 rounded transition text-sm"
+          >
+            Demo Admin
+          </button>
+        </div>
+
+        <p className="mt-6 text-center text-sm text-gray-600">
           Don't have an account? <Link to="/register" className="text-[#1976D2] font-semibold">Register</Link>
         </p>
       </div>

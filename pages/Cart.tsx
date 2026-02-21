@@ -1,10 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { FiTrash2, FiMinus, FiPlus, FiArrowLeft } from 'react-icons/fi';
+import { FiTrash2, FiMinus, FiPlus, FiArrowLeft, FiTag, FiCheckCircle, FiLoader } from 'react-icons/fi';
 
 const Cart = () => {
   const { items, updateQuantity, removeFromCart, totalPrice } = useCart();
+  const [couponCode, setCouponCode] = useState('');
+  const [isApplying, setIsApplying] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
+
+  const handleApplyCoupon = () => {
+    if (!couponCode.trim()) return;
+    setIsApplying(true);
+    
+    // Simulate API call delay
+    setTimeout(() => {
+      setIsApplying(false);
+      setAppliedCoupon(couponCode.toUpperCase());
+      setCouponCode('');
+    }, 1500);
+  };
 
   if (items.length === 0) {
     return (
@@ -90,18 +105,47 @@ const Cart = () => {
               <span>Free</span>
             </div>
             
+            {appliedCoupon && (
+              <div className="flex justify-between mb-4 text-green-600 bg-green-50 p-2 rounded">
+                <span className="flex items-center gap-1"><FiTag /> Coupon: {appliedCoupon}</span>
+                <span>- $10.00</span>
+              </div>
+            )}
+            
             <div className="border-t pt-4 flex justify-between mb-6">
               <span className="font-bold text-gray-800 text-lg">Total</span>
-              <span className="font-bold text-[#1976D2] text-lg">${totalPrice.toLocaleString()}</span>
+              <span className="font-bold text-[#1976D2] text-lg">
+                ${(totalPrice - (appliedCoupon ? 10 : 0)).toLocaleString()}
+              </span>
             </div>
 
             <div className="mb-6">
-              <input 
-                type="text" 
-                placeholder="Coupon Code" 
-                className="w-full p-2 border rounded mb-2 text-sm"
-              />
-              <button className="w-full bg-gray-100 text-gray-600 py-2 rounded text-sm hover:bg-gray-200">Apply Coupon</button>
+              <div className="relative">
+                <input 
+                  type="text" 
+                  placeholder="Coupon Code" 
+                  className="w-full p-2 border rounded mb-2 text-sm focus:outline-none focus:border-blue-500 disabled:bg-gray-100"
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value)}
+                  disabled={!!appliedCoupon || isApplying}
+                />
+              </div>
+              {!appliedCoupon ? (
+                <button 
+                  onClick={handleApplyCoupon}
+                  disabled={!couponCode || isApplying}
+                  className="w-full bg-gray-100 text-gray-600 py-2 rounded text-sm hover:bg-gray-200 transition flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {isApplying ? <FiLoader className="animate-spin" /> : 'Apply Coupon'}
+                </button>
+              ) : (
+                 <button 
+                  onClick={() => setAppliedCoupon(null)}
+                  className="w-full bg-red-50 text-red-600 py-2 rounded text-sm hover:bg-red-100 transition"
+                >
+                  Remove Coupon
+                </button>
+              )}
             </div>
 
             <Link to="/checkout" className="block w-full bg-[#1976D2] hover:bg-blue-700 text-white text-center py-3 rounded-lg font-bold transition">
